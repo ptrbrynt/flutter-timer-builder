@@ -2,18 +2,18 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 
 /// Used by TimerBuilder to determine the next DateTime to trigger a rebuild on
-typedef DateTime? TimerGenerator(DateTime now);
+typedef DateTime? TimedGenerator(DateTime now);
 
 /// A widget that rebuilds on specific and / or periodic Timer events.
-class TimerBuilder extends StatefulWidget {
+class TimedBuilder extends StatefulWidget {
   final WidgetBuilder builder;
-  final TimerGenerator generator;
+  final TimedGenerator generator;
 
   /// Use this constructor only if you need to provide a custom TimerGenerator.
-  /// For general cases, prefer to use [TimerBuilder.periodic] and [TimerBuilder..scheduled]
+  /// For general cases, prefer to use [TimedBuilder.periodic] and [TimerBuilder..scheduled]
   /// This constructor accepts a custom generator function that returns the next time event
   /// to rebuild on.
-  TimerBuilder({
+  TimedBuilder({
     /// Returns the next time event. If the returned time is in the past, it will be ignored and
     /// the generator will be called again to retrieve the next time event.
     /// If the generator returns [null], it indicates the end of time event sequence.
@@ -25,11 +25,11 @@ class TimerBuilder extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
-    return _TimerBuilderState();
+    return _TimedBuilderState();
   }
 
   /// Rebuilds periodically
-  TimerBuilder.periodic(
+  TimedBuilder.periodic(
     Duration interval, {
 
     /// Specifies the alignment unit for the generated time events. Specify Duration.zero
@@ -42,7 +42,7 @@ class TimerBuilder extends StatefulWidget {
             alignment: alignment ?? getAlignmentUnit(interval));
 
   /// Rebuilds on a schedule
-  TimerBuilder.scheduled(
+  TimedBuilder.scheduled(
     Iterable<DateTime> schedule, {
 
     /// Builds the widget. Called for every time event or when the widget needs to be built/rebuilt.
@@ -50,7 +50,7 @@ class TimerBuilder extends StatefulWidget {
   }) : this.generator = scheduledTimer(schedule);
 }
 
-class _TimerBuilderState extends State<TimerBuilder> {
+class _TimedBuilderState extends State<TimedBuilder> {
   Stream<DateTime>? stream;
   Completer? completer;
 
@@ -63,7 +63,7 @@ class _TimerBuilderState extends State<TimerBuilder> {
   }
 
   @override
-  void didUpdateWidget(TimerBuilder oldWidget) {
+  void didUpdateWidget(TimedBuilder oldWidget) {
     super.didUpdateWidget(oldWidget);
     _update();
   }
@@ -83,7 +83,7 @@ class _TimerBuilderState extends State<TimerBuilder> {
   _update() {
     _cancel();
     completer = Completer();
-    stream = createTimerStream(widget.generator, completer!.future);
+    stream = createTimedStream(widget.generator, completer!.future);
   }
 
   _cancel() {
@@ -91,7 +91,7 @@ class _TimerBuilderState extends State<TimerBuilder> {
   }
 }
 
-TimerGenerator periodicTimer(
+TimedGenerator periodicTimer(
   Duration interval, {
   Duration alignment = Duration.zero,
 }) {
@@ -108,14 +108,14 @@ TimerGenerator periodicTimer(
   };
 }
 
-TimerGenerator scheduledTimer(Iterable<DateTime> schedule) {
+TimedGenerator scheduledTimer(Iterable<DateTime> schedule) {
   List<DateTime> sortedSpecific = List.from(schedule.toList());
   sortedSpecific.sort((a, b) => a.compareTo(b));
 
   return fromIterable(sortedSpecific);
 }
 
-TimerGenerator fromIterable(Iterable<DateTime> iterable) {
+TimedGenerator fromIterable(Iterable<DateTime> iterable) {
   final iterator = iterable.iterator;
   return (DateTime now) {
     return iterator.moveNext() ? iterator.current : null;
@@ -124,8 +124,8 @@ TimerGenerator fromIterable(Iterable<DateTime> iterable) {
 
 /// Creates a stream tha produces DateTime objects at the times specified by the [generator].
 /// Stops the stream when [stopSignal] is received.
-Stream<DateTime> createTimerStream(
-  TimerGenerator generator,
+Stream<DateTime> createTimedStream(
+  TimedGenerator generator,
   Future stopSignal,
 ) async* {
   var now = DateTime.now();

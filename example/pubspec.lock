@@ -128,7 +128,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.19"
-  timer_builder:
+  timed_builder:
     dependency: "direct dev"
     description:
       path: ".."

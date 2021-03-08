@@ -2,7 +2,7 @@ name: example
 author: Alexander Ryzhov <aryzhov07@gmail.com>
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -12,9 +12,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  timer_builder:
+  timed_builder:
     path: ../
 
 flutter:
-
   uses-material-design: true

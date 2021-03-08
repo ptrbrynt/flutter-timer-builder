@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:timer_builder/timer_builder.dart';
+import 'package:timed_builder/timed_builder.dart';
 
 void main() {
   runApp(SampleApp());
@@ -28,7 +28,7 @@ class SampleAppState extends State<SampleApp> {
         appBar: AppBar(
           title: Text('Sample App'),
         ),
-        body: TimerBuilder.scheduled([alert], builder: (context) {
+        body: TimedBuilder.scheduled([alert], builder: (context) {
           // This function will be called once the alert time is reached
           var now = DateTime.now();
           var reached = now.compareTo(alert) >= 0;
@@ -44,7 +44,7 @@ class SampleAppState extends State<SampleApp> {
                   size: 48,
                 ),
                 !reached
-                    ? TimerBuilder.periodic(Duration(seconds: 1),
+                    ? TimedBuilder.periodic(Duration(seconds: 1),
                         alignment: Duration.zero, builder: (context) {
                         // This function will be called every second until the alert time
                         var now = DateTime.now();
